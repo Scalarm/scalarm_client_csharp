@@ -4,6 +4,20 @@ using System.Collections.Generic;
 
 namespace Scalarm
 {
+
+	public class SimulationScenarioExperimentsResult
+	{
+		public string status {get; set;}
+		public List<string>  experiments {get; set;}
+		public string message {get; set;}
+	}
+
+	public class SimulationScenariosResult
+	{
+		public string status {get; set;}
+		public List<string>  simulation_scenarios {get; set;}
+		public string message {get; set;}
+	}
     public class ExperimentCreationResult
     {
         public string status {get; set;}

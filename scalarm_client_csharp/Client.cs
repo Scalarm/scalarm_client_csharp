@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using RestSharp;
 using System.Linq;
 using System.Collections;
@@ -47,6 +48,49 @@ namespace Scalarm
                 throw new InvalidResponseException(response);
             }
 		}
+
+		public List<string> GetSimulationScenarioIds()
+		{
+			var request = new RestRequest("/simulation_scenarios.json", Method.GET);
+			var response = this.Execute<ResourceEnvelope<SimulationScenariosResult>>(request);
+
+			ValidateResponseStatus(response);
+
+			var resource = JsonConvert.DeserializeObject<SimulationScenariosResult>(response.Content);
+			Console.WriteLine (resource);
+			if (resource.status == "ok") {
+				List<string>  simulation_scenarios = resource.simulation_scenarios;
+				return simulation_scenarios;
+			} else if (resource.status == "error") {
+				throw new ScalarmResourceException<SimulationScenariosResult>(response.Data);
+			} else {
+				throw new InvalidResponseException(response);
+			}
+		}
+
+
+		public List<string>  GetSimulationScenarioExperiments(string scenarioId)
+		{
+			var request = new RestRequest("/simulation_scenarios/{id}/experiments", Method.GET);
+			request.AddUrlSegment("id", scenarioId);
+
+			var response = this.Execute<ResourceEnvelope<SimulationScenarioExperimentsResult>>(request);
+
+			ValidateResponseStatus(response);
+
+			var resource = JsonConvert.DeserializeObject<SimulationScenarioExperimentsResult>(response.Content);
+			Console.WriteLine (resource);
+			if (resource.status == "ok") {
+				List<string>  experiments_ids = resource.experiments;
+				return experiments_ids;
+			} else if (resource.status == "error") {
+				throw new ScalarmResourceException<SimulationScenarioExperimentsResult>(response.Data);
+			} else {
+				throw new InvalidResponseException(response);
+			}
+		}
+
+
 
 		// Get object containing lists of all experiments reachable for user
 		// The object has three lists, splitting experiments by their state:
