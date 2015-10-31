@@ -4,6 +4,23 @@ using System.Collections.Generic;
 
 namespace Scalarm
 {
+
+	public class StatusAndMessageResult
+	{
+		public string status {get; set;}
+		public string message {get; set;}
+	}
+
+	public class SimulationScenarioExperimentsResult : StatusAndMessageResult
+	{
+		public List<string> experiments {get; set;}
+	}
+
+	public class SimulationScenariosResult : StatusAndMessageResult
+	{
+		public List<string> simulation_scenarios {get; set;}
+	}
+
     public class ExperimentCreationResult
     {
         public string status {get; set;}
