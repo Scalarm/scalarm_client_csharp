@@ -7,6 +7,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>scalarm_client_csharp_app</RootNamespace>
     <AssemblyName>scalarm_client_csharp_app</AssemblyName>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,6 +37,7 @@
     <Compile Include="ExampleMisc.cs" />
     <Compile Include="ExampleSimple.cs" />
     <Compile Include="TestGetSimError.cs" />
+    <Compile Include="ExampleSimulationScenario.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\scalarm_client_csharp\scalarm_client_csharp.csproj">
@@ -45,12 +48,12 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="RestSharp">
-      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\RestSharp\RestSharp.Net45\bin\Debug\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\Downloads\Json70r1\Bin\Net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="example_scenario\bin.zip">

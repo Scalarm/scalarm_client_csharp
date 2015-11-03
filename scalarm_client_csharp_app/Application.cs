@@ -106,7 +106,7 @@ namespace Scalarm
 
 		static void Main()
 		{
-			new ExampleFullRegister().Run();
+			new ExampleSimulationScenario().Run();
 		}
 
 	}
