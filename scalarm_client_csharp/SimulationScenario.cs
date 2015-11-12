@@ -46,7 +46,9 @@ namespace Scalarm
 
         public SimulationScenario()
         {}
-
+		public List<string> GetAllSimulationScenarioIds(){
+			return Client.GetSimulationScenarioIds();
+		}
 		// TODO: change to use CustomPointsExperiment
         public Experiment CreateExperimentWithPoints(List<ValuesMap> points, Dictionary<string, object> experimentParams)
         {

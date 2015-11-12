@@ -328,6 +328,12 @@ namespace Scalarm
 			}
 		}
 
+		// return list of experiment ids created from simulation scenario
+		public List<string> GetExperimentsBySimulationScenarioId(string scenarioId) 
+		{
+			return Client.GetSimulationScenarioExperiments(scenarioId);
+		}
+
 		// TODO: parse json to resolve types?
 		// <summary>
 		//  Gets results in form od Dictionary: input parameters -> MoEs
