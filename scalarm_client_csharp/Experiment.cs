@@ -333,11 +333,11 @@ namespace Scalarm
 		//  Gets results in form od Dictionary: input parameters -> MoEs
 		//  Input parameters and MoEs are in form of dictionaries: id -> value; both keys and values are string!
 		// </summary>
-		public IList<SimulationParams> GetResults()
+		public IList<SimulationParams> GetResults(Boolean fetchFailed = false)
 		{
 			// TODO: iterate all this experiment's SimulationParams and fill results to outputs
 
-			IList<ValuesMap> results = Client.GetExperimentResults(Id);
+			IList<ValuesMap> results = Client.GetExperimentResults(Id, fetchFailed);
 			IList<string> parametersIds = InputDefinition.ParametersIdsForCategories(InputSpecification);
 
 			FillSimulationParamsMap(ConvertTypes(results), parametersIds);
@@ -350,18 +350,27 @@ namespace Scalarm
 		public static IList<ValuesMap> ConvertTypes(IList<ValuesMap> results)
 		{
 			var convertedResults = new List<ValuesMap>();
-			foreach (var item in results) {
+			foreach(var item in results) {
 				convertedResults.Add(item);
 			}
 
 			foreach (var record in convertedResults) {
                 // http://stackoverflow.com/a/18288740/1367361
                 List<string> keys = new List<string>(record.Keys);
-                foreach (string key in keys)
-                {
-                    // TODO: check with string values - probably there will bo problem with deserializing because lack of ""
-                    record[key] = JsonConvert.DeserializeObject(record[key].ToString());
-                }
+				foreach(string key in keys) {
+
+					// TODO: check with string values - probably there will bo problem with deserializing because lack of ""
+					try {
+
+						record[key] = JsonConvert.DeserializeObject(record[key].ToString());
+						// exception happen when evaluate toString method on String object -> wrong Deserialize
+
+					} catch (Newtonsoft.Json.JsonReaderException e) {
+						//do nothing - it is already a String 
+					}
+				}
+
+                
 			}
 
 			return convertedResults;

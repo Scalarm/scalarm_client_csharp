@@ -420,11 +420,17 @@ namespace Scalarm
             return response.Data;
         }
 
-		public IList<ValuesMap> GetExperimentResults(string experimentId)
+		/// <summary>
+		/// Gets the experiment results in csv when addictional parameter passed it return info about status and errors.
+		/// </summary>
+		/// <returns>The experiment results.</returns>
+		/// <param name="experimentId">Experiment identifier.</param>
+		/// <param name="fetchFailed">If set to <c>true</c> response will have addictional 2 columns status and error_reason.</param>
+		public IList<ValuesMap> GetExperimentResults(string experimentId, Boolean fetchFailed = false)
 		{
-			var request = new RestRequest("/experiments/{id}/file_with_configurations", Method.GET);
+			var request = new RestRequest("/experiments/{id}/file_with_configurations?with_status={fetchFailed}", Method.GET);
 			request.AddUrlSegment("id", experimentId);
-
+			request.AddUrlSegment("fetchFailed", fetchFailed==true ? "1" : "0");
 			var response = this.Execute(request);
 
 			ValidateResponseStatus(response);
