@@ -112,7 +112,7 @@ namespace Scalarm
 			}
 		}
 
-		// Save all experiment binary results in a .tar.gz format to provided file path.
+		// Save all experiment binary results in a .zip format to provided file path.
 		public void GetExperimentBinaryResults(string experimentId, string path)
 		{
 			var request = new RestRequest("/experiments/{id}/results_binaries", Method.GET);
@@ -120,6 +120,23 @@ namespace Scalarm
 			IRestResponse restResponse = this.Execute(request);
 			if (restResponse.ErrorException != null) {
 				const string message = "Error retrieving response.  Check inner details for more info.";
+				var ResponseException = new ApplicationException (message, restResponse.ErrorException);
+				throw ResponseException;
+			} else {
+				var code = restResponse.RawBytes;
+				code.SaveAs(path);
+			}
+		}
+
+		// Save specific simulation run's experiment binary result in a .zip format to provided file path.
+		public void GetSimulationRunBinaryResult(string experimentId, int simulationRunIndex, string path)
+		{
+			var request = new RestRequest("/experiments/{id}/simulations/{sim_index}/results_binaries", Method.GET);
+			request.AddUrlSegment("id", experimentId);
+			request.AddUrlSegment("sim_index", simulationRunIndex);
+			IRestResponse restResponse = this.Execute(request);
+			if (restResponse.ErrorException != null) {
+				const string message = "Error retrieving response. Check inner details for more info.";
 				var ResponseException = new ApplicationException (message, restResponse.ErrorException);
 				throw ResponseException;
 			} else {

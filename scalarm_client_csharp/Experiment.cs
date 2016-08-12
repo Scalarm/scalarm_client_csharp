@@ -95,6 +95,15 @@ namespace Scalarm
 			Client.GetExperimentBinaryResults(Id, path);
 		}
 
+		/// <summary>
+		/// Get and save simulation run binary results in .zip format for given simulation run index.
+		/// </summary>
+		/// <param name="path">Local path to save results (.zip file will be created)</param>
+		public virtual void GetBinaryResultFor(int simulationRunIndex, string path)
+		{
+			Client.GetSimulationRunBinaryResult(Id, simulationRunIndex, path);
+		}
+
 		public virtual void CreateParamsMap(List<ValuesMap> parameters)
 		{
 			foreach (var p in parameters) {

@@ -35,6 +35,7 @@
     <Compile Include="ExampleMisc.cs" />
     <Compile Include="ExampleSimple.cs" />
     <Compile Include="TestGetSimError.cs" />
+    <Compile Include="ExampleGetInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\scalarm_client_csharp\scalarm_client_csharp.csproj">
