@@ -15,7 +15,7 @@ namespace Scalarm
 	public class ExampleGetInfo
 	{
 		public string ExperimentId { get; set; }
-		public string SimulationRunId { get; set; }
+		public int SimulationRunId { get; set; }
 		public string ResultsSavePath { get; set; }
 
 		public ExampleGetInfo() 
@@ -26,7 +26,7 @@ namespace Scalarm
 		public void Run()
 		{
 			if (ExperimentId == null) {
-				throw new Exception("ExperiemntId not provided to ExampleGetInfo instance");
+				throw new Exception("ExperimentId not provided to ExampleGetInfo instance");
 			}
 
 			var config = Application.ReadConfig ("config.json");
@@ -38,8 +38,25 @@ namespace Scalarm
 
 				Console.WriteLine("Got experiment with id: {0}, name: {1}, started at: {2}", experiment.Id, experiment.Name, experiment.StartAt);
 
+				GetResultsOptions resultsOptions = new GetResultsOptions() {
+					WithIndex = true,
+					WithParams = true,
+					WithMoes = true,
+					WithStatus = true,
+					MinIndex = 1,
+					MaxIndex = 1000
+				};
+
+				IList<SimulationParams> results = experiment.GetResults(resultsOptions);
+
+
 				experiment.GetBinaryResults(ResultsSavePath);
-				experiment.GetBinaryResults(ResultsSavePath);
+				foreach (SimulationParams r in results) {
+					int index = int.Parse(r.Output["simulation_index"].ToString());
+					string path = String.Format("/tmp/result-{0}.tar.gz", index);
+					Console.WriteLine("Get results for simulation run {0} to: {1}", index, path);
+					experiment.GetSimulationRunBinaryResult(index, path);
+				}
 
 				Console.WriteLine("Binary experiment results saved to: {0}", ResultsSavePath);
 			}

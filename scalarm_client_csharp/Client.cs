@@ -128,12 +128,14 @@ namespace Scalarm
 			}
 		}
 
-		// Save specific simulation run's experiment binary result in a .zip format to provided file path.
+		// TODO: handle not found error
+
+		// Save specific simulation run's experiment binary result in a .tar.gz format to provided file path.
 		public void GetSimulationRunBinaryResult(string experimentId, int simulationRunIndex, string path)
 		{
-			var request = new RestRequest("/experiments/{id}/simulations/{sim_index}/results_binaries", Method.GET);
+			var request = new RestRequest("/storage/experiments/{id}/simulations/{sim_index}", Method.GET);
 			request.AddUrlSegment("id", experimentId);
-			request.AddUrlSegment("sim_index", simulationRunIndex);
+			request.AddUrlSegment("sim_index", simulationRunIndex.ToString());
 			IRestResponse restResponse = this.Execute(request);
 			if (restResponse.ErrorException != null) {
 				const string message = "Error retrieving response. Check inner details for more info.";
@@ -540,16 +542,30 @@ namespace Scalarm
         }
 
 		/// <summary>
+		/// A legacy version of GetExperimentResults function signature - with fetchFailed parameter.
+		/// </summary>
+		/// <returns>The experiment results.</returns>
+		/// <param name="experimentId">Experiment identifier.</param>
+		/// <param name="fetchFailed">If set to <c>true</c> fetch information about failed simulation runs.</param>
+		public IList<ValuesMap> GetExperimentResults(string experimentId, Boolean fetchFailed = false)
+		{
+			var options = new GetResultsOptions() { WithStatus = fetchFailed };
+			return GetExperimentResults(experimentId, options);
+		}
+
+		/// <summary>
 		/// Gets the experiment results in csv when additional parameter passed it return info about status and errors.
 		/// </summary>
 		/// <returns>The experiment results.</returns>
 		/// <param name="experimentId">Experiment identifier.</param>
 		/// <param name="fetchFailed">If set to <c>true</c> response will have additional 2 columns status and error_reason.</param>
-		public IList<ValuesMap> GetExperimentResults(string experimentId, Boolean fetchFailed = false)
+		public IList<ValuesMap> GetExperimentResults(string experimentId, GetResultsOptions options)
 		{
-			var request = new RestRequest("/experiments/{id}/file_with_configurations?with_status={fetchFailed}", Method.GET);
+			var request = new RestRequest("/experiments/{id}/file_with_configurations", Method.GET);
 			request.AddUrlSegment("id", experimentId);
-			request.AddUrlSegment("fetchFailed", fetchFailed==true ? "1" : "0");
+			if (options != null) {
+				options.AddUrlSegments(request);
+			}
 			var response = this.Execute(request);
 
 			ValidateResponseStatus(response);
