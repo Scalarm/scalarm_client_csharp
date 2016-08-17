@@ -106,7 +106,12 @@ namespace Scalarm
 
 		static void Main()
 		{
-			new ExampleFullRegister().Run();
+//			new ExampleFullRegister().Run();
+
+			var exampleGetInfo = new ExampleGetInfo();
+			exampleGetInfo.ExperimentId = "57aadf5a4269a818208da4c2";
+			exampleGetInfo.SimulationRunId = 288;
+			exampleGetInfo.Run();
 		}
 
 	}

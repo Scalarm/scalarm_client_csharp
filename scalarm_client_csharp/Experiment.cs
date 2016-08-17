@@ -95,6 +95,15 @@ namespace Scalarm
 			Client.GetExperimentBinaryResults(Id, path);
 		}
 
+		/// <summary>
+		/// Get and save simulation run binary results in .tar.gz format for given simulation run index.
+		/// </summary>
+		/// <param name="path">Local path to save results (.tar.gz file will be created)</param>
+		public virtual void GetSimulationRunBinaryResult(int simulationRunIndex, string path)
+		{
+			Client.GetSimulationRunBinaryResult(Id, simulationRunIndex, path);
+		}
+
 		public virtual void CreateParamsMap(List<ValuesMap> parameters)
 		{
 			foreach (var p in parameters) {
@@ -337,16 +346,22 @@ namespace Scalarm
 			}
 		}
 
+		public virtual IList<Scalarm.SimulationParams> GetResults(Boolean fetchFailed = false)
+		{
+			var options = new GetResultsOptions() { WithStatus = fetchFailed };
+			return GetResults(options);
+		}
+
 		// TODO: parse json to resolve types?
 		// <summary>
 		//  Gets results in form od Dictionary: input parameters -> MoEs
 		//  Input parameters and MoEs are in form of dictionaries: id -> value; both keys and values are string!
 		// </summary>
-		public virtual IList<SimulationParams> GetResults(Boolean fetchFailed = false)
+		public virtual IList<SimulationParams> GetResults(GetResultsOptions options)
 		{
 			// TODO: iterate all this experiment's SimulationParams and fill results to outputs
 
-			IList<ValuesMap> results = Client.GetExperimentResults(Id, fetchFailed);
+			IList<ValuesMap> results = Client.GetExperimentResults(this.Id, options);
 			IList<string> parametersIds = InputDefinition.ParametersIdsForCategories(InputSpecification);
 
 			FillSimulationParamsMap(ConvertTypes(results), parametersIds);
