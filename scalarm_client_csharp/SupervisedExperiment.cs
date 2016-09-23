@@ -41,25 +41,35 @@ namespace Scalarm
 
 		#endregion
 
-
-		public virtual void SchedulePoint(ValuesMap point)
+		/// <summary>
+		/// Schedules the point.
+		/// </summary>
+		/// <param name="point">Point.</param>
+		/// <returns>Scheduled point index in Scalarm</returns>
+		public virtual int SchedulePoint(ValuesMap point)
 		{
 			var request = new RestRequest(String.Format("experiments/{0}/schedule_point", this.Id), Method.POST);
 			request.AddParameter("point", point.ToJson());
 			var result = Client.Execute<SchedulePointResult> (request);
-			HandleSchedulePointResponse(result);
+			return HandleSchedulePointResponse(result);
 		}
 
-		public virtual void SchedulePoints(IEnumerable<ValuesMap> points)
+		/// <summary>
+		/// Schedules the points.
+		/// </summary>
+		/// <returns>Array of point indexes in order of point in "point" array</returns>
+		/// <param name="points">Array with points</param>
+		public virtual List<int> SchedulePoints(IEnumerable<ValuesMap> points)
 		{
 			// TODO: implement multi-point scheduling in Scalarm
-
+			List<int> indexes = new List<int>();
 			foreach (ValuesMap point in points) {
-				SchedulePoint(point);
+				indexes.Add(SchedulePoint(point));
 			}
+			return indexes;
 		}
 
-		private void HandleSchedulePointResponse(IRestResponse<SchedulePointResult> response)
+		private int HandleSchedulePointResponse(IRestResponse<SchedulePointResult> response)
 		{
 			Client.ValidateResponseStatus(response);
 
@@ -67,7 +77,7 @@ namespace Scalarm
 
 			if (dataResult.status == "ok")
 			{
-				return;
+				return dataResult.index;
 			} else if (dataResult.status == "error") {
 				throw new SchedulePointException("");
 			} else {

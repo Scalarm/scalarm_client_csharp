@@ -104,17 +104,20 @@ namespace Scalarm
 		/// Register point in this instance to use them for results "generation" in GetResults
 		/// </summary>
 		/// <param name="point">Point.</param>
-		public override void SchedulePoint(Scalarm.ValuesMap point)
+		public override int SchedulePoint(Scalarm.ValuesMap point)
 		{
 			// TODO: register points in instance to use them in GetResults
 			StoredPoints.Add(point);
+			return StoredPoints.Count;
 		}
 
-		public override void SchedulePoints(IEnumerable<Scalarm.ValuesMap> points)
+		public override List<int> SchedulePoints(IEnumerable<Scalarm.ValuesMap> points)
 		{
+			var indexes = new List<int> ();
 			foreach (Scalarm.ValuesMap point in points) {
-				SchedulePoint(point);
+				indexes.Add(SchedulePoint(point));
 			}
+			return indexes;
 		}
 
 

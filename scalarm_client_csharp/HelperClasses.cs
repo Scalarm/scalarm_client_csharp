@@ -58,6 +58,7 @@ namespace Scalarm
 	public class SchedulePointResult
 	{
 		public string status { get; set; }
+		public int index { get; set; }
 	}
 
 	// TODO: merge with other, change name
