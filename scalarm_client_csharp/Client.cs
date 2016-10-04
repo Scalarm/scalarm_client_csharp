@@ -14,7 +14,7 @@ namespace Scalarm
 {
 	public abstract class Client : RestClient
 	{
-		public const string VERSION = "2016_03_10_2112";
+		public const string VERSION = "2016_10_04-1";
 
 		public int MaxRequestTries { get; set; }
 		public int RequestRetryTimeMs { get; set; }
