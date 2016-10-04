@@ -7,6 +7,7 @@ using System.Linq;
 using System.Collections;
 using System.ComponentModel;
 using RestSharp.Deserializers;
+using RestSharp;
 
 namespace Scalarm
 {	
@@ -440,6 +441,31 @@ namespace Scalarm
 			return GetSimulationManagers(new Dictionary<string, object>() {
 				{"states_not", new string[] {"error", "terminating"}}
 			});
+		}
+
+		/// <summary>
+		/// Send information about runtime state of Experiment's supervisor.
+		/// Using this, experiment supervisors logging can be done and logs can be accessed
+		/// with Scalarm HTTP API.
+		/// </summary>
+		/// <param name="state">A state info that will be serialized into JSON</param>
+		public virtual void AddSupervisorRunState(Object state)
+		{
+			var request = new RestRequest("/experiments/{id}/supervisor_run/state_history", Method.POST);
+			request.AddUrlSegment("id", this.Id);
+			request.AddParameter("state", JsonConvert.SerializeObject(state));
+			IRestResponse<PostSupervisorRunStateResult> restResponse =
+				this.Client.Execute<PostSupervisorRunStateResult>(request);
+
+			Scalarm.Client.ValidateResponseStatus(restResponse);
+
+			var data = restResponse.Data;
+
+			if (data.status == "ok") {
+				return;
+			} else {
+				throw new InvalidResponseException(restResponse);
+			}
 		}
 
 //		// TODO: this should be method for "Results" object?

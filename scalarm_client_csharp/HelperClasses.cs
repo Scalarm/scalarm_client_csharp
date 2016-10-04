@@ -74,5 +74,11 @@ namespace Scalarm
 		public List<string> completed { get; set; }
 		public List<string> historical { get; set; }
 	}
+
+	public class PostSupervisorRunStateResult : ScalarmStatus
+	{
+		public string info { get; set; }
+		public string reason { get; set; }
+	}
 }
 
