@@ -163,10 +163,6 @@ namespace Scalarm
 		{
 			throw new NotImplementedException();
 		}
-		public override void FillSimulationParamsMap(IList<ValuesMap> results, IList<string> parametersIds)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }
 

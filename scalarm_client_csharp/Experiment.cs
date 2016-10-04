@@ -28,8 +28,6 @@ namespace Scalarm
 			}
 		}
 
-		public Dictionary<ValuesMap, ValuesMap> SimulationParamsMap { get; protected set; }
-
 		// TODO support for parameter constraints
 
 		#region model
@@ -77,13 +75,11 @@ namespace Scalarm
 
 		public Experiment()
 		{
-			SimulationParamsMap = new Dictionary<ValuesMap, ValuesMap>();
 		}
 
         public Experiment(string experimentId, Client client) : base(client)
         {
             Id = experimentId;
-			SimulationParamsMap = new Dictionary<ValuesMap, ValuesMap>();
         }
 
 		/// <summary>
@@ -102,13 +98,6 @@ namespace Scalarm
 		public virtual void GetSimulationRunBinaryResult(int simulationRunIndex, string path)
 		{
 			Client.GetSimulationRunBinaryResult(Id, simulationRunIndex, path);
-		}
-
-		public virtual void CreateParamsMap(List<ValuesMap> parameters)
-		{
-			foreach (var p in parameters) {
-				SimulationParamsMap.Add(p, null);
-			}
 		}
 
 		protected virtual void OnExperimentCompleted(EventArgs e)
@@ -364,10 +353,9 @@ namespace Scalarm
 			IList<ValuesMap> results = Client.GetExperimentResults(this.Id, options);
 			IList<string> parametersIds = InputDefinition.ParametersIdsForCategories(InputSpecification);
 
-			FillSimulationParamsMap(ConvertTypes(results), parametersIds);
+			IList<SimulationParams> finalResults = MakeResults(ConvertTypes(results), parametersIds);
 
-			// cast to SimulationParam (list)
-			return SimulationParamsMap.ToList().Select(p => (SimulationParams)p).ToList();
+			return finalResults;
 		}
 
 		// TODO: can modify results, use with caution
@@ -400,26 +388,36 @@ namespace Scalarm
 			return convertedResults;
 		}
 
-		public virtual void FillSimulationParamsMap(IList<ValuesMap> results, IList<string> parametersIds)
+		/// <summary>
+		/// Using CSV-like results fetched from Scalarm (list of ValuesMap) and knowning input parameter ids,
+		/// create a list of SimulationParams, which have Input and Output fields that contain values maps
+		/// splitted into input parameters and output (results).
+		/// </summary>
+		/// <returns>List of SimulationParams objects. Each is a result from single simulation run.</returns>
+		/// <param name="results">Results fetched from Scalarm in form of list of ValuesMap (see GetResults HTTP method).</param>
+		/// <param name="parametersIds">Ids of input parameters for disinguishing input parameters from outputs.</param>
+		public virtual IList<SimulationParams> MakeResults(IList<ValuesMap> results, IList<string> parametersIds)
 		{
+			List<SimulationParams> convertedResults = new List<SimulationParams>();
+
 			foreach (var result in results) {
-				var resultDict = result.ShallowCopy();
+				ValuesMap input = new ValuesMap();
+				ValuesMap output = new ValuesMap();
 
-				var paramsDict = new ValuesMap();
+				SimulationParams singleResult = new SimulationParams(input, output);
 
-				foreach (string id in parametersIds) {
-					if (resultDict.ContainsKey(id)) {
-						paramsDict.Add(id, resultDict[id]);
-						resultDict.Remove(id);
+				foreach (string id in result.Keys) {
+					if (parametersIds.Contains(id)) {
+						singleResult.Input.Add(id, result[id]);
+					} else {
+						singleResult.Output.Add(id, result[id]);
 					}
 				}
 
-				if (SimulationParamsMap.ContainsKey(paramsDict)) {
-					SimulationParamsMap [paramsDict] = resultDict;
-				} else {
-					SimulationParamsMap.Add(paramsDict, resultDict);
-				}
+				convertedResults.Add(singleResult);
 			}
+
+			return convertedResults;
 		}
 
 		/// <summary>
